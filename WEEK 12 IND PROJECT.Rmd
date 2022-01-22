@@ -1,0 +1,500 @@
+---
+title: "Week 12 Independent Project"
+author: "Brenda Chepkoech"
+date: "1/21/2022"
+output: html_document
+---
+
+# Research Question
+
+A Kenyan entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ your services as a Data Science Consultant to help her identify which individuals are most likely to click on her ads.
+
+
+# Defining the question
+
+## i)Specifying the Data Analytic Question
+To be able to help the entrepreneur identify which individuals are most likely to click on her ads. 
+
+## ii)Defining the Metric for Success
+
+Being able to Perform  univariate and bivariate analysis and a conclusion and recommendation.
+
+## iii)Recording the Experimental Design
+
+1)  Read the dataset into our environment (RStudio)
+
+2)  Preview the dataset
+
+3)  Find and deal with outliers, anomalies, and missing data within the dataset
+
+4)  Perform univariate and bivariate analysis
+
+5)  From your insights provide a conclusion and recommendation
+
+# Loading the dataset
+
+```{r}
+# Dataset url = http://bit.ly/IPAdvertisingData
+# 
+#library("data.table")
+Advert <- read.csv("http://bit.ly/IPAdvertisingData")
+
+# View the dataset in our environment
+View(Advert)
+
+```
+
+## Previewing the dataset
+
+1) Previewing the first 6 rows of the dataset
+
+```{r}
+#Previewing the head of the dataset
+head(Advert)
+
+```
+2) Previewing the last 6 rows of the dataset
+
+```{r}
+#Previewing the tail of the dataset
+tail(Advert)
+```
+3) Checking the shape of the dataset
+
+```{r}
+#Checking the shape of the dataset
+dim(Advert)
+
+```
+The dataset has 1000 rows and 10 columns
+
+ 4)The datatypes of the columns in our dataset
+ 
+```{r}
+# Structure of the dataset
+str(Advert)
+```
+We can see that 3 columns are of the type integer, 3 are of the type number and 4 columns are of the character type.
+
+# Cleaning the Dataset
+
+## Checking for duplicates
+
+```{r}
+# Checking the number of duplicated rows
+duplicated_rows <- Advert[duplicated(Advert),]
+duplicated_rows
+```
+There are no duplicates in our dataset
+
+## Checking for null values
+
+```{r}
+# Sum of null values in each column
+colSums(is.na(Advert))
+
+```
+There are no null values in our dataset
+
+## Checking for  outliers in the numeric columns
+
+We check for outliers using box plots
+
+```{r}
+# Checking for  outliers in the Daily.Time.Spent.on.Site column
+boxplot(Advert$Daily.Time.Spent.on.Site)
+```
+From the boxplot, we can see that there are no outliers in the 'Daily Time spent on site' column.
+
+```{r}
+#Checking for outlier in the age column
+boxplot(Advert$Age)
+
+```
+From the boxplot, we can see that there are no outliers in the 'Age' column.
+
+```{r}
+#Checking for outliers in the Daily.Internet.Usage column
+boxplot(Advert$Daily.Internet.Usage)
+
+```
+
+From the boxplot, we can see that there are no outliers in the 'Daily.Internet.Usage' column. 
+
+```{r}
+#checking for outliers in the Area.Income column
+boxplot(Advert$Area.Income)
+
+```
+From the boxplot, we can see that there are no outliers in the 'Area.Income' column.
+
+We shall not drop the outlier because income amount varies from one person to another. It is possible to get a person who gets littlr income compared to the other people.
+
+# Exploratory Data Analysis
+
+## Univariate Analysis
+
+### Measures of Central Tendency
+
+### 1)Mean
+```{r}
+#Mean
+mean(Advert$Daily.Time.Spent.on.Site)
+
+```
+The average Time Spent Daily on Site is 65
+
+```{r}
+# Mean Area.Income
+mean(Advert$Area.Income)
+
+```
+The average area income in our dataset is 55000
+
+```{r}
+# Mean age
+mean(Advert$Age)
+
+```
+The average age of individuals in our dataset is 36 years
+
+```{r}
+#Mean for Daily.Internet.Usage
+mean(Advert$Daily.Internet.Usage)
+
+```
+The average internet usage daily is 180
+
+### 2)Median
+
+```{r}
+#Median Daily.Time.Spent.on.Site
+median(Advert$Daily.Time.Spent.on.Site)
+
+```
+The Median Time Spent Daily on Site is 68.215 minutes
+
+```{r}
+# median Area.Income
+median(Advert$Area.Income)
+```
+The Median income in our dataset is 57012.3
+
+```{r}
+# Median age
+median(Advert$Age)
+
+```
+
+The median age of individuals in our dataset is 35 years
+
+```{r}
+#Median for Daily.Internet.Usage
+median(Advert$Daily.Time.Spent.on.Site)
+
+```
+
+The Median  Daily.Internet.Usage is 183.13
+
+### 3)Mode
+
+```{r}
+# Define a function for getting the mode 
+
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+#mode for Daily.Internet.Usage
+getmode(Advert$Daily.Internet.Usage)
+
+```
+The mode for daily internet usage is 167.22
+
+```{r}
+#Mode for age
+getmode(Advert$Age)
+```
+The mode of age in our dataset is 31
+
+```{r}
+getmode(Advert$Daily.Time.Spent.on.Site)
+```
+The mode of time spent in our dataset is 31
+
+## Measures of Dispersion
+
+### 1)Range
+
+```{r}
+range(Advert$Age)
+
+```
+The range of age in our dataset is between 19 and 21
+
+```{r}
+range(Advert$Daily.Time.Spent.on.Site)
+
+```
+The range of Time Spent Daily on Site is between 32.60 and 91.43
+
+```{r}
+range(Advert$Daily.Internet.Usage)
+
+```
+The range for Daily.Internet.Usage is between 104.78 and 269.96
+
+```{r}
+range(Advert$Area.Income)
+
+```
+The range for area income is between 13996.5 and 79484.8
+
+#### 2)Variance
+
+```{r}
+#Variance for Age
+var(Advert$Age)
+```
+The variance in the age is 77.18
+
+```{r}
+#Variance for Time Spent on Site
+var(Advert$Daily.Time.Spent.on.Site)
+```
+The variance in the daily time spent on site is 251.33
+
+```{r}
+#Variance for Internet Usage
+var(Advert$Daily.Internet.Usage)
+```
+
+The variance in the daily internet usage is 1927.415
+
+### 3)Standard deviation
+
+```{r}
+#Standard deviation for Age
+sd(Advert$Age)
+```
+Standard deviation for Age is 8.785
+
+```{r}
+#Standard deviation for Internet Usage
+sd(Advert$Daily.Internet.Usage)
+```
+
+Standard deviation for daily Internet Usage is 43.90234
+
+```{r}
+#Standard deviation for Time Spent on Site
+sd(Advert$Daily.Time.Spent.on.Site)
+```
+Standard deviation for Time Spent on Site is 15.85361
+
+### 3)Quantiles
+```{r}
+#time quantiles for daily Internet Usage
+quantile(Advert$Daily.Internet.Usage)
+```
+
+The first quantile in the daily Internet Usage is 138.83
+The third quantile in the daily Internet Usage is 218.7925
+
+```{r}
+#time quantiles for age 
+quantile(Advert$Age)
+```
+The first quantile in age is 29
+The third quantile in age is 42
+
+```{r}
+#time quantiles for Daily.Time.Spent.on.Site
+quantile(Advert$Daily.Time.Spent.on.Site)
+```
+
+The first quantile in the daily time spent is 51.36 minutes.
+The third quantile in the daily time spent on site is 78.55 minutes.
+
+### Frequency Tables
+
+```{r}
+# Gender Frequency Table
+# 0 symbolizes female while 1 is male
+gender <- table(Advert$Male)
+gender
+```
+
+From the frequency table, we can see that there are 519 females and 481 males in our dataset.
+
+```{r}
+# Country Frequency Table
+countries <- (table(Advert$Country))
+# Sort the table so as to find the country with the most individuals in our dataset
+sorted_countries <- sort(countries, decreasing = TRUE)
+head(sorted_countries)
+```
+We can say that both Czech Republic and France had 9 individuals, while Afghanistan, Australia, Cyprus and Greece all had 8 individuals each.
+
+```{r}
+# Clicked on Ad Frequency Table
+# 0 means the individual did not click on the ad, 1 means the individual clicked on an ad
+clicked <- table(Advert$Clicked.on.Ad)
+clicked
+```
+
+From the frequency table we can say that 500 people clicked on the add and 500 people did not click on the add
+
+
+```{r}
+# City Frequency Table
+city <- table(Advert$City)
+# Sort the table so as to find the city with the most individuals in our dataset
+sorted_city <- sort(city, decreasing = TRUE)
+head(sorted_city)
+```
+From the frequecy table we can say that Lisamouth and Williamsport had 3 people and the other cities had 2 people
+
+```{r}
+# Age Frequency Table
+age <- table(Advert$Age)
+# Sort the table so as to find the age with the most individuals
+sorted_age <- sort(age, decreasing = TRUE)
+head(sorted_age)
+```
+
+we can tell that individuals aged between 31 and 36 years old are the most in our dataset.
+
+### Graphical Plots
+
+#### 1)Histograms
+
+```{r}
+#histogram for the age column
+hist(Advert$Age, xlab = 'Age', main = 'Histogram for Age')
+```
+
+From the histogram, we can also tell that age 25 - 35 had the highest frequency in the dataset.
+
+### 2)Barplot
+
+```{r}
+# Gender barplot
+barplot(gender, xlab = 'Gender', ylab = 'Count', main = 'Bar Chart for Gender')
+
+```
+
+From the bar chart, we can tell that 0(female) had more people that 1(male) in our dataset.
+
+```{r}
+# bar plot for age
+age <- table(Advert$Age)
+# Then we plot a bar chart 
+barplot(age, xlab ='Age', ylab ='Frequency', main ='Age Bar Chart')
+```
+
+From the bar chart above, we can tell that age 31 had the highest frequency in the dataset.
+
+## Bivariate Analysis
+
+### Covariance
+
+```{r}
+#covariance between age and internet usage
+age <- Advert$Age
+units <- Advert$Daily.Internet.Usage
+cov(age, units)
+```
+There is a negative covariance(-141.6348) between age and the daily usage of internet which means that the older a person is, the less units they use on internet daily.
+
+```{r}
+# covariance between age and the daily time spent on the site
+age <- Advert$Age
+time <- Advert$Daily.Time.Spent.on.Site
+cov(age, time)
+```
+There is a negative covariance(-46.17415) between age and the daily time Spent on Site which means that the older a person is, the less units they visit the site.
+
+### Correlation
+
+```{r}
+# correlation between age and daily internet usage
+cor(age, units)
+```
+
+There is a negative linear relationship between age and the daily internet usage.
+
+```{r}
+#  correlation between age and time spent on site
+cor(age, time)
+```
+
+There is a negative linear relationship between age and the daily time spent on the site.
+
+### Correlation Matrix
+
+First we load the corrplot library which enables us to plot a correlation matrix.
+
+```{r}
+ #correlation library
+library(corrplot) # This library allows us to plot correlation.
+
+```
+We go ahead to create a subset that holds the numerical columns in our dataset.
+
+```{r}
+# Create a subset of the numerical columns in our dataset
+numerical <- subset(Advert, select = c(Daily.Time.Spent.on.Site, Age, Daily.Internet.Usage, Area.Income))
+```
+
+
+Plot a correlation matrix for the numerical variables in our dataset.
+
+```{r}
+# correlation matrix
+cor(numerical)
+```
+
+
+### Scatter Plots
+
+```{r}
+#scatter plot
+plot(age, time, xlab = 'Age', ylab = 'Daily Time Spent on Site', main = 'Age vs Daily Time Spent on Site')
+```
+
+From the scatter plot, we can see that as the age increases, time spent on site redices and vice versa.
+
+```{r}
+#scatter plot
+plot(age, units, xlab = 'Age', ylab = 'Daily Internet Usage', main = 'Age vs Daily Internet Usage')
+```
+
+From this scatter plot, we can see that as the age increases, the daily internet usage reduces and vice versa.
+
+## Conclusion
+
+From the univariate data analysis, we can conclude that: 
+
+- There were more females than males in our dataset.
+
+- Individuals who are between 28 and 36 years old were the most in our dataset.
+
+- Czech Republic and France both had the highest number of individuals (9) in the dataset.
+
+- The dataset was balanced in the sense that 500 individuals clicked on the ads while 500 individuals did not click on the ads.
+
+- Lisamouth and Williamsport cities both had the highest number of individuals (3) in the dataset.
+
+From the bivariate data analysis, we can conclude that: 
+
+- There is a negative covariance and correlation between age and daily time spent on the site which means that the older an individual is, the less time they spend on the site.
+
+- There is also a negative covariance and correlation between age and the daily internet usage which means that the younger an individual is, the higher the internet usage is as compared to an older individual.
+
+## Recommendations
+
+ - She should create ads that targets individuals aged between 25 and 35 years old seeing as they are the most in our dataset.
+
+ - She should focuse on the youth more as they use the internet more and spend more time on the site as compared to the older individuals.
